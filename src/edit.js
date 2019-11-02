@@ -8,6 +8,7 @@ import {
 } from '@wordpress/block-editor';
 
 import {
+    PanelBody,
     SelectControl
 } from '@wordpress/components';
 
@@ -15,17 +16,20 @@ const edit = ( { attributes, setAttributes, className, isSelected } ) => {
     return (
         <>
             <InspectorControls>
-                <SelectControl
-						value={ attributes.fontsize }
-						options={ [
-							{ label: 'Small', value: 'small' },
+                <PanelBody title="Display Settings">
+                    <SelectControl
+                        label="Font Size"
+                        value={ attributes.fontsize }
+                        options={ [
+                            { label: 'Small', value: 'small' },
                             { label: 'Medium', value: 'medium' },
                             { label: 'Large', value: 'large' },
-						] }
-						onChange={ ( val ) => {
-							setAttributes( { fontsize: val } );
-						} }
-					/>
+                        ] }
+                        onChange={ ( val ) => {
+                            setAttributes( { fontsize: val } );
+                        } }
+                    />
+                </PanelBody>
             </InspectorControls>
             <figure className={ className }>
                 { attributes.video 
