@@ -14,6 +14,9 @@ registerBlockType( 'mkaz/asciinema-block', {
 	title: 'Asciinema Block',
 	icon: 'format-video',
 	category: 'widgets',
+	supports: {
+		align: true,
+	},
 
 	attributes: {
 		video: {
@@ -33,7 +36,21 @@ registerBlockType( 'mkaz/asciinema-block', {
 			attribute: 'font-size',
 			selector: 'asciinema-player',
 			default: 'medium',
-		}
+		},
+		cols: {
+			type: 'number',
+			source: 'attribute',
+			attribute: 'cols',
+			selector: 'asciinema-player',
+			default: 80,
+		},
+		rows: {
+			type: 'number',
+			source: 'attribute',
+			attribute: 'rows',
+			selector: 'asciinema-player',
+			default: 24,
+		},
 	},
 
 	edit,
