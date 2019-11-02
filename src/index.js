@@ -7,10 +7,8 @@
 
 // WordPress dependencies
 import { registerBlockType } from '@wordpress/blocks';
-import {
-	MediaPlaceholder,
-	RichText,
-} from '@wordpress/block-editor';
+import edit from './edit';
+import save from './save';
 
 registerBlockType( 'mkaz/asciinema-block', {
 	title: 'Asciinema Block',
@@ -29,42 +27,15 @@ registerBlockType( 'mkaz/asciinema-block', {
 			source: 'text',
 			selector: 'figcaption',
 		},
+		fontsize: {
+			type: 'string',
+			source: 'attribute',
+			attribute: 'font-size',
+			selector: 'asciinema-player',
+			default: 'medium',
+		}
 	},
 
-	edit: ( { attributes, setAttributes, className, isSelected } ) => {
-		return (
-			<figure className={ className }>
-				{ attributes.video 
-					? <asciinema-player src={ attributes.video } />
-					: <MediaPlaceholder
-						onSelect = { ( el ) => setAttributes( { video: el.url } ) }
-						allowedTypes = {[ 'text' ]}
-						labels ={ {title: 'Asciinema Recording'} }
-					/>
-				}
-				{ ( ! RichText.isEmpty( attributes.caption ) || isSelected ) && (
-					<RichText
-						tagName="figcaption"
-						placeholder="Write caption…"
-						value={ attributes.caption }
-						onChange={ ( value ) => setAttributes( { caption: value } ) }
-						inlineToolbar
-					/>
-				) }
-			</figure>
-		);
-	},
-
-	save: ( { attributes, className } ) => {
-		return (
-			<figure className={ className }>
-				{ attributes.video && 
-					<asciinema-player src={ attributes.video } />
-				}
-				{ ! RichText.isEmpty( attributes.caption ) && 
-					<RichText.Content tagName="figcaption" value={ attributes.caption } />
-				}
-			</figure>
-		);
-	}
-});
+	edit,
+	save,
+} );
