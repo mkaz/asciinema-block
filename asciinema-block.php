@@ -3,7 +3,7 @@
  * Plugin Name:     Asciinema Block
  * Plugin URI:      https://github.com/mkaz/asciinema-block
  * Description:     Adds an asciinema block to playback recordings
- * Version:         0.1.0
+ * Version:         0.2.0
  * Author:          Marcus Kazmierczak
  * Author URI:      https://mkaz.blog/
  * License:         GPL-2.0-or-later
