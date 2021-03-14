@@ -9,8 +9,8 @@
 import { registerBlockType } from '@wordpress/blocks';
 import { __ } from "@wordpress/i18n";
 
-import edit from './edit';
-import save from './save';
+import Edit from './edit';
+import Save from './save';
 import icon from './icon';
 
 registerBlockType( 'mkaz/asciinema-block', {
@@ -46,14 +46,14 @@ registerBlockType( 'mkaz/asciinema-block', {
 			default: 'medium',
 		},
 		cols: {
-			type: 'number',
+			type: 'string',
 			source: 'attribute',
 			attribute: 'cols',
 			selector: 'asciinema-player',
 			default: 80,
 		},
 		rows: {
-			type: 'number',
+			type: 'string',
 			source: 'attribute',
 			attribute: 'rows',
 			selector: 'asciinema-player',
@@ -61,6 +61,6 @@ registerBlockType( 'mkaz/asciinema-block', {
 		},
 	},
 
-	edit,
-	save,
+	edit: Edit,
+	save: Save,
 } );

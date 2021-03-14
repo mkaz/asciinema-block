@@ -23,46 +23,46 @@ import { __ } from "@wordpress/i18n";
 
 import icon from "./icon";
 
-const edit = ({
+const Edit = ({
 	attributes,
 	isSelected,
 	noticeOperations,
 	noticeUI,
 	setAttributes,
 }) => {
-	const { caption, cols, id, rows, url } = attributes;
-	const [hasError, setHasError] = useState(false);
-	const { media, mediaUpload } = useSelect(
+	const { caption, cols, fontsize, id, rows, url } = attributes;
+	const [ hasError, setHasError ] = useState( false );
+	const { mediaUpload } = useSelect(
 		(select) => ({
 			media:
-				id === undefined ? undefined : select(coreStore).getMedia(id),
+				id === undefined ? undefined : select( coreStore ).getMedia( id ),
 
-			mediaUpload: select(blockEditorStore).getSettings().mediaUpload,
+			mediaUpload: select( blockEditorStore ).getSettings().mediaUpload,
 		}),
-		[id]
+		[ id ]
 	);
 
 	useEffect(() => {
 		// Upload a file drag-and-dropped into the editor
-		if (isBlobURL(url)) {
-			const file = getBlobByURL(url);
+		if (isBlobURL( url )) {
+			const file = getBlobByURL( url );
 
 			mediaUpload({
-				filesList: [file],
-				onFileChange: ([newMedia]) => onSelectFile(newMedia),
-				onError: (message) => {
-					setHasError(true);
-					noticeOperations.createErrorNotice(message);
+				filesList: [ file ],
+				onFileChange: ( [ newMedia ] ) => onSelectFile( newMedia ),
+				onError: ( message ) => {
+					setHasError( true );
+					noticeOperations.createErrorNotice( message );
 				},
 			});
 
-			revokeBlobURL(url);
+			revokeBlobURL( url );
 		}
 	}, []);
 
-	function onSelectFile(newMedia) {
-		if (newMedia && newMedia.url) {
-			setHasError(false);
+	function onSelectFile( newMedia ) {
+		if ( newMedia && newMedia.url ) {
+			setHasError( false );
 			setAttributes({
 				url: newMedia.url,
 				id: newMedia.id,
@@ -70,12 +70,11 @@ const edit = ({
 		}
 	}
 
-	function onUploadError(message) {
-		setHasError(true);
+	function onUploadError( message ) {
+		setHasError( true );
 		noticeOperations.removeAllNotices();
-		noticeOperations.createErrorNotice(message);
+		noticeOperations.createErrorNotice( message );
 	}
-
 
 	return (
 		<>
@@ -83,7 +82,7 @@ const edit = ({
 				<PanelBody title="Display Settings">
 					<SelectControl
 						label="Font Size"
-						value={ attributes.fontsize }
+						value={ fontsize }
 						options={ [
 							{ label: 'Small', value: 'small' },
 							{ label: 'Medium', value: 'medium' },
@@ -96,7 +95,7 @@ const edit = ({
 					<RangeControl
 						label="Number of Columns"
 						help="Set to same number in recording to avoid resize"
-						value={ attributes.cols }
+						value={ parseInt( cols ) }
 						onChange={ ( val ) => {
 							setAttributes( { cols: val } );
 						} }
@@ -104,15 +103,15 @@ const edit = ({
 					<RangeControl
 						label="Number of Rows"
 						help="Set to same number in recording to avoid resize"
-						value={ attributes.rows }
+						value={ parseInt( rows ) }
 						onChange={ ( val ) => {
 							setAttributes( { rows: val } );
 						} }
 					/>
 				</PanelBody>
 			</InspectorControls>
-			{ ( !url || hasError ) ?
-				<div { ...useBlockProps() }>
+			<div { ...useBlockProps() }>
+				{ ( !url || hasError ) ?
 					<MediaPlaceholder
 						icon={ icon }
 						labels={ {
@@ -124,29 +123,27 @@ const edit = ({
 						onError={ onUploadError }
 						accept="*.cast"
 					/>
-				</div>
 				:
-				<div { ...useBlockProps() }>
 					<Placeholder
 						icon={ icon }
 						instructions={ __("Cast file to be displayed") }
 						label={ __("Asciinema Recording") }
-					>
+				>
 						<div className="asciinema-block-placeholder-url">{ url }</div>
 					</Placeholder>
-				</div>
-			}
-			{ ( ! RichText.isEmpty( attributes.caption ) || isSelected ) && (
-				<RichText
-					tagName="figcaption"
-					placeholder="Write caption…"
-					value={ attributes.caption }
-					onChange={ ( value ) => setAttributes( { caption: value } ) }
-					inlineToolbar
-				/>
-			) }
+				}
+				{ ( ! RichText.isEmpty( attributes.caption ) || isSelected ) && (
+					<RichText
+						tagName="figcaption"
+						placeholder="Write caption…"
+						value={ caption }
+						onChange={ ( value ) => setAttributes( { caption: value } ) }
+						inlineToolbar
+					/>
+				) }
+			</div>
 		</>
 	);
 };
 
-export default withNotices( edit );
+export default withNotices( Edit );

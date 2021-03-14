@@ -3,7 +3,7 @@
  */
  import { RichText, useBlockProps } from "@wordpress/block-editor";
  
- const save = ({ attributes }) => {
+ const Save = ({ attributes }) => {
      return (
 	<figure { ...useBlockProps.save() }>
 		<asciinema-player
@@ -19,5 +19,5 @@
      );
  };
  
- export default save;
+ export default Save;
  
