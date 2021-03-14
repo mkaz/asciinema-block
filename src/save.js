@@ -1,23 +1,23 @@
 /**
  * WordPress dependencies
  */
-import {
-	RichText,
-} from '@wordpress/block-editor';
-	
-const save = ( { attributes, className } ) => {
-    return (
-        <figure className={ className }>
-            { attributes.video && 
-                <asciinema-player
-                    src={ attributes.video }
-                    font-size={ attributes.fontsize } />
-            }
-            { ! RichText.isEmpty( attributes.caption ) && 
-                <RichText.Content tagName="figcaption" value={ attributes.caption } />
-            }
-        </figure>
-    );
-};
-
-export default save;
+ import { RichText, useBlockProps } from "@wordpress/block-editor";
+ 
+ const save = ({ attributes }) => {
+     return (
+	<figure { ...useBlockProps.save() }>
+		<asciinema-player
+			src={ attributes.url }
+			font-size={ attributes.fontsize }
+			cols={ attributes.cols }
+			rows={ attributes.rows }
+             ></asciinema-player>
+		{ ! RichText.isEmpty( attributes.caption ) && 
+		    <RichText.Content tagName="figcaption" value={ attributes.caption } />
+        }
+	</figure>
+     );
+ };
+ 
+ export default save;
+ 

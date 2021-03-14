@@ -7,19 +7,27 @@
 
 // WordPress dependencies
 import { registerBlockType } from '@wordpress/blocks';
+import { __ } from "@wordpress/i18n";
+
 import edit from './edit';
 import save from './save';
+import icon from './icon';
 
 registerBlockType( 'mkaz/asciinema-block', {
-	title: 'Asciinema Block',
-	icon: 'format-video',
+	apiVersion: 2,
+	title: __("Asciinema Block", "asciinema-block"),
+	description: __(
+		"A block to display asciinema recordings.",
+		"asciinema-block"
+	),
+	icon,
 	category: 'widgets',
 	supports: {
 		align: true,
 	},
 
 	attributes: {
-		video: {
+		url: {
 			type: 'string',
 			source: 'attribute',
 			attribute: 'src',

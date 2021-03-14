@@ -1,19 +1,82 @@
 /**
  * WordPress dependencies
  */
+import { getBlobByURL, isBlobURL, revokeBlobURL } from "@wordpress/blob";
 import {
 	InspectorControls,
 	MediaPlaceholder,
 	RichText,
-} from '@wordpress/block-editor';
-
+	store as blockEditorStore,
+	useBlockProps,
+} from "@wordpress/block-editor";
 import {
 	PanelBody,
+	Placeholder,
 	RangeControl,
 	SelectControl,
-} from '@wordpress/components';
+	withNotices
+} from "@wordpress/components";
+import { store as coreStore } from "@wordpress/core-data";
+import { useEffect, useState } from "@wordpress/element";
+import { useSelect } from "@wordpress/data";
+import { __ } from "@wordpress/i18n";
 
-const edit = ( { attributes, setAttributes, className, isSelected } ) => {
+import icon from "./icon";
+
+const edit = ({
+	attributes,
+	isSelected,
+	noticeOperations,
+	noticeUI,
+	setAttributes,
+}) => {
+	const { caption, cols, id, rows, url } = attributes;
+	const [hasError, setHasError] = useState(false);
+	const { media, mediaUpload } = useSelect(
+		(select) => ({
+			media:
+				id === undefined ? undefined : select(coreStore).getMedia(id),
+
+			mediaUpload: select(blockEditorStore).getSettings().mediaUpload,
+		}),
+		[id]
+	);
+
+	useEffect(() => {
+		// Upload a file drag-and-dropped into the editor
+		if (isBlobURL(url)) {
+			const file = getBlobByURL(url);
+
+			mediaUpload({
+				filesList: [file],
+				onFileChange: ([newMedia]) => onSelectFile(newMedia),
+				onError: (message) => {
+					setHasError(true);
+					noticeOperations.createErrorNotice(message);
+				},
+			});
+
+			revokeBlobURL(url);
+		}
+	}, []);
+
+	function onSelectFile(newMedia) {
+		if (newMedia && newMedia.url) {
+			setHasError(false);
+			setAttributes({
+				url: newMedia.url,
+				id: newMedia.id,
+			});
+		}
+	}
+
+	function onUploadError(message) {
+		setHasError(true);
+		noticeOperations.removeAllNotices();
+		noticeOperations.createErrorNotice(message);
+	}
+
+
 	return (
 		<>
 			<InspectorControls>
@@ -48,29 +111,42 @@ const edit = ( { attributes, setAttributes, className, isSelected } ) => {
 					/>
 				</PanelBody>
 			</InspectorControls>
-			<figure className={ className }>
-				{ attributes.video ?
-					<asciinema-player
-						src={ attributes.video }
-						font-size={ attributes.fontsize } /> :
+			{ ( !url || hasError ) ?
+				<div { ...useBlockProps() }>
 					<MediaPlaceholder
-						onSelect={ ( el ) => setAttributes( { video: el.url } ) }
-						allowedTypes={ [ 'text' ] }
-						labels={ { title: 'Asciinema Recording' } }
+						icon={ icon }
+						labels={ {
+							title: __("Asciinema Recording"),
+							instructions: __("Upload an asciinema cast file."),
+						} }
+						onSelect={ onSelectFile }
+						notices={ noticeUI }
+						onError={ onUploadError }
+						accept="*.cast"
 					/>
-				}
-				{ ( ! RichText.isEmpty( attributes.caption ) || isSelected ) && (
-					<RichText
-						tagName="figcaption"
-						placeholder="Write caption…"
-						value={ attributes.caption }
-						onChange={ ( value ) => setAttributes( { caption: value } ) }
-						inlineToolbar
-					/>
-				) }
-			</figure>
+				</div>
+				:
+				<div { ...useBlockProps() }>
+					<Placeholder
+						icon={ icon }
+						instructions={ __("Cast file to be displayed") }
+						label={ __("Asciinema Recording") }
+					>
+						<div className="asciinema-block-placeholder-url">{ url }</div>
+					</Placeholder>
+				</div>
+			}
+			{ ( ! RichText.isEmpty( attributes.caption ) || isSelected ) && (
+				<RichText
+					tagName="figcaption"
+					placeholder="Write caption…"
+					value={ attributes.caption }
+					onChange={ ( value ) => setAttributes( { caption: value } ) }
+					inlineToolbar
+				/>
+			) }
 		</>
 	);
 };
 
-export default edit;
+export default withNotices( edit );
